@@ -3,6 +3,8 @@ import pandas as pd
 import preprocessing,helper
 import numpy as np
 import plotly.express as px
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 df = pd.read_csv('athlete_events.csv')
 region_df = pd.read_csv('noc_regions.csv')
@@ -83,3 +85,20 @@ if user_menu == 'Overall Analysis':
     st.title("Atheletes over the year")
     st.plotly_chart(fig)
     # st.dataframe(df)
+
+    st.title("No of Events over time(Every Sports)")
+    fig,ax=plt.subplots(figsize=(25,25))
+    x = df.drop_duplicates(['Year', 'Sport', 'Event'])
+    ax=sns.heatmap(x.pivot_table(index='Sport',columns='Year',values='Event',aggfunc='count').fillna(0).astype('int'),annot=True)
+
+    st.pyplot(fig)
+
+    st.title("Most successful Athletes")
+    sport_list=df['Sport'].unique().tolist()
+    sport_list.sort()
+    sport_list.insert(0,'Overall')
+    selected_sport=st.selectbox('Select the sport',sport_list)
+    number=[5,10,15,20]
+    selected_number=st.selectbox('Select number of top players',number)
+    x=helper.most_sucsessful(df,selected_sport,selected_number)
+    st.table(x)

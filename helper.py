@@ -51,3 +51,15 @@ def nations_over_time(df,type):
     nation_over_time = nation_over_time.rename(columns={'Year': 'Editions', 'count': type})
 
     return nation_over_time
+
+# now we need to make a function in which when we pass the sports it will tell the most succesfull person in that sports
+def most_sucsessful(df,sport,number):
+    # we have some NA values in df but we dont need that so we delete them first
+    temp_df=df.dropna(subset='Medal')
+
+    if sport != 'Overall':
+        temp_df = temp_df[temp_df['Sport'] == sport]
+
+    x=temp_df['Name'].value_counts().reset_index().head(number).merge(df,left_on='Name',right_on='Name',how='left')[['Name','count','Sport','region']].drop_duplicates('Name')
+    x=x.rename(columns={'count':'Medals'})
+    return x
