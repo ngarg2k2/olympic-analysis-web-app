@@ -1,5 +1,4 @@
 import  numpy as np
-
 def medal_tally(df):
     medal_tally = df.drop_duplicates(subset=['Team', 'NOC', 'Games', 'Year', 'City', 'Sport', 'Event', 'Medal'])
     medal_tally = medal_tally.groupby('region').sum()[['Gold', 'Silver', 'Bronze']].sort_values('Gold',ascending=False).reset_index()
@@ -45,3 +44,10 @@ def fetch_medal_tally(df, year, country):
     # x['total'] = x['total'].astype('int')
 
     return x
+
+def nations_over_time(df,type):
+    # now we need to plot a graph between year and no of participated nation
+    nation_over_time = df.drop_duplicates(['Year', type])['Year'].value_counts().reset_index().sort_values('Year')
+    nation_over_time = nation_over_time.rename(columns={'Year': 'Editions', 'count': type})
+
+    return nation_over_time
