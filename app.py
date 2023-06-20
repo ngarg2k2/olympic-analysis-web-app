@@ -102,3 +102,25 @@ if user_menu == 'Overall Analysis':
     selected_number=st.selectbox('Select number of top players',number)
     x=helper.most_sucsessful(df,selected_sport,selected_number)
     st.table(x)
+
+if user_menu == 'Country-Wise Analysis':
+    st.sidebar.title("Country-wise Analysis")
+
+    country_list=df['region'].dropna().unique().tolist()
+    country_list.sort()
+    selected_country=st.sidebar.selectbox('Select the country',country_list)
+    country_df=helper.year_wise_medal_tally(df,selected_country)
+    fig=px.line(country_df,x="Year",y="Medal")
+
+    st.title(selected_country+" Medal Tally over the years")
+    st.plotly_chart(fig)
+
+    st.title(selected_country+" excels in the following sports")
+    pt=helper.country_event_heatmap(df,selected_country)
+    fig,ax=plt.subplots(figsize=(25,25))
+    ax=sns.heatmap(pt,annot=True)
+    st.pyplot(fig)
+
+    st.title("Top 10 athletes of "+selected_country)
+    tmp=helper.most_sucsessful_athletes(df,selected_country)
+    st.table(tmp)

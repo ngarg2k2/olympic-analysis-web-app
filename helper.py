@@ -1,4 +1,6 @@
 import  numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
 def medal_tally(df):
     medal_tally = df.drop_duplicates(subset=['Team', 'NOC', 'Games', 'Year', 'City', 'Sport', 'Event', 'Medal'])
     medal_tally = medal_tally.groupby('region').sum()[['Gold', 'Silver', 'Bronze']].sort_values('Gold',ascending=False).reset_index()
@@ -61,5 +63,30 @@ def most_sucsessful(df,sport,number):
         temp_df = temp_df[temp_df['Sport'] == sport]
 
     x=temp_df['Name'].value_counts().reset_index().head(number).merge(df,left_on='Name',right_on='Name',how='left')[['Name','count','Sport','region']].drop_duplicates('Name')
+    x=x.rename(columns={'count':'Medals'})
+    return x
+
+def year_wise_medal_tally(df,region):
+    tmp_df = df.dropna(subset=['Medal'])
+    tmp_df = tmp_df.drop_duplicates(['Team', 'NOC', 'Sport', 'Games', 'Year', 'City', 'Event', 'Medal'])
+    # tmp_df
+    new_df = tmp_df[tmp_df['region'] == region]
+    final_df = new_df.groupby('Year').count()['Medal'].reset_index()
+    return final_df
+
+def country_event_heatmap(df,region):
+    tmp_df = df.dropna(subset=['Medal'])
+    tmp_df = tmp_df.drop_duplicates(['Team', 'NOC', 'Sport', 'Games', 'Year', 'City', 'Event', 'Medal'])
+    # tmp_df
+    new_df = tmp_df[tmp_df['region'] == region]
+
+    tmp=new_df.pivot_table(index='Sport', columns='Year', values='Medal', aggfunc='count').fillna(0).astype('int')
+    return tmp
+
+def most_sucsessful_athletes(df,country):
+    # we have some NA values in df but we dont need that so we delete them first
+    temp_df=df.dropna(subset='Medal')
+    temp_df=temp_df[temp_df['region']==country]
+    x=temp_df['Name'].value_counts().reset_index().head(10).merge(df,left_on='Name',right_on='Name',how='left')[['Name','count','Sport']].drop_duplicates('Name')
     x=x.rename(columns={'count':'Medals'})
     return x
